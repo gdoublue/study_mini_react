@@ -4,8 +4,8 @@
  */
 
 const createdElement = (type, props, ...children) => {
-    console.log('%c createdElement======', 'color: #4096ef')
-    console.log(type,props,children)
+    // console.log('%c createdElement======', 'color: #4096ef')
+    // console.log(type,props,children)
     //判断是否是组件
     if(typeof type==='object'){
 
