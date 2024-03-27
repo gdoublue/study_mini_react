@@ -5,7 +5,7 @@
 
 import renderFiber from './render_fiber.js'
 
-console.log('fiber111')
+
 const createdElement = (type, props, ...children) => {
     // console.log('%c createdElement======', 'color: #4096ef')
     // console.log(type,props,children)
@@ -18,7 +18,7 @@ const createdElement = (type, props, ...children) => {
     if(typeof type === 'function'){
         return type(props)
     }
-    console.log('createdElement',type,props,children)
+
     return {
         type,
         props: {

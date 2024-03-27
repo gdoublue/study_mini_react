@@ -9,6 +9,7 @@ const classArr = ["aaa", "bbb", "ccc", "AMD"];
 let i = 0;
 
 function NBA() {
+
   return (
     <div className="nba">
       <h1>
@@ -33,8 +34,7 @@ function NBA() {
   );
 }
 
-console.log("NBAPlayer--------------", <Player id='12'></Player>);
-console.log("NBAPlayer---++++++++", <NBA></NBA>);
+
 
 let num = 1023;
 function Player({num} ) {
@@ -58,23 +58,22 @@ function LBJ( ) {
     </div>
   );
 }
-// const childrenLIst = [];
-// while (i < 20) {
-//   i++;
-//   childrenLIst.push(
-//     React.createElement("li", { id: "test" + i }, "这是第" + i + "个li"),
-//   );
-// }
-// const UlCmp = React.createElement("ul", {}, ...childrenLIst);
+const childrenLIst = [];
+while (i < 20000) {
+  i++;
+  childrenLIst.push(
+    React.createElement("li", { id: "test" + i }, "这是第" + i + "个li"),
+  );
+}
+const UlCmp = React.createElement("ul", {}, ...childrenLIst);
 
 // console.log({ Appcmp ,Test });
 
 const app = (
   <div>
-    <NBA></NBA>
+    {/*<NBA></NBA>*/}
+      <UlCmp></UlCmp>
   </div>
 );
 
-console.warn('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-console.log(app)
 export default app;

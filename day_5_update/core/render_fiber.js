@@ -2,9 +2,6 @@
  * @author zhui 906613279@qq.com
  * @description 使用fiber实现
  */
-// requestIdleCallback((t) => {
-//     console.log('requestIdleCallback')
-// }
 
 const render = (element, container) => {
   // console.log('fiberRender',element,container)
@@ -29,7 +26,15 @@ function setProps(dom, props) {
   Object.keys(props)
     .filter((key) => key !== "children")
     .forEach((name) => {
-      dom[name] = props[name];
+      //处理事件
+      if (name.startsWith("on")) {
+        // 事件处理
+        const eventType = name.toLowerCase().substring(2);
+        dom.addEventListener(eventType, props[name]);
+      } else {
+        // 其他属性
+        dom[name] = props[name];
+      }
     });
 }
 export function calc(fiber) {
@@ -74,9 +79,6 @@ function workLoop(deadline) {
       commitRoot();
     }
   }
-
-  // console.log(deadline.timeRemaining())
-  // requestIdleCallback(workLoop)
 }
 let root;
 function commitRoot() {
@@ -101,9 +103,7 @@ function commitWork(fiber) {
   commitWork(fiber.sibling);
 }
 
-function performUnitofWork(fiber) {
-  return calc(fiber);
-}
+
 
 function findNextFiber(fiber) {
   if (fiber.child) {
@@ -120,12 +120,7 @@ function findNextFiber(fiber) {
       parent = parent.parent;
     }
 
-    // while (parent) {
-    //   if (parent.sibling) {
-    //     return parent.sibling;
-    //   }
-    //   parent = fiber.parent;
-    // }
+
   }
 }
 export default render;
