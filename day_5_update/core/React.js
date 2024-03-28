@@ -6,7 +6,7 @@
 const functionComponents = [];
 
 const createdElement = (type, props, ...children) => {
-  // console.log("createdElement", type, props, children);
+
   //判断是否是组件
   if (typeof type === "object") {
     return type;
@@ -60,6 +60,7 @@ const render = (element, container) => {
 };
 
 export function createDom(fiber) {
+  console.error("createDom", fiber);
   return fiber.type === "TEXT_ELEMENT"
     ? document.createTextNode("")
     : document.createElement(fiber.type);
@@ -67,14 +68,14 @@ export function createDom(fiber) {
 
 function updateProps(dom, props, preProps) {
 
-  if(preProps){
-    console.log("更新Props===========");
-    console.log("dom", dom);
-    console.log("props", props);
-    console.log("preProps", preProps);
-
-    console.log("^^^^^^^^^^^^^^^^^^^");
-  }
+  // if(preProps){
+  //   console.log("更新Props===========");
+  //   console.log("dom", dom);
+  //   console.log("props", props);
+  //   console.log("preProps", preProps);
+  //
+  //   console.log("^^^^^^^^^^^^^^^^^^^");
+  // }
 
 
   preProps = preProps || {};
@@ -121,6 +122,8 @@ function updateProps(dom, props, preProps) {
     }
   });
 }
+
+let deletions = [];
 export function calc(fiber) {
   if (!fiber.dom) {
     fiber.dom = createDom(fiber);
@@ -128,12 +131,16 @@ export function calc(fiber) {
 
   updateProps(fiber.dom, fiber.props, fiber?.alterNate?.props);
 
+
+
   let preFiber;
   let oldFiber = fiber.alterNate?.child;
   fiber.props.children.forEach((child, index) => {
-    const isSame = oldFiber && oldFiber.props.type === child.props.type;
+    const isSame = oldFiber && oldFiber.type === child.type;
     let item;
+    // console.log("isSame", isSame, oldFiber, child)
     if (isSame) {
+
       item = {
         type: child.type,
         parent: fiber,
@@ -143,6 +150,10 @@ export function calc(fiber) {
         effectTag: "UPDATE",
       };
     } else {
+
+      if(oldFiber){
+        deletions.push(oldFiber)
+      }
       item = {
         type: child.type,
         parent: fiber,
@@ -185,6 +196,15 @@ function commitRoot() {
   console.time("commitRoot");
   root && commitWork(root.child);
   console.timeEnd("commitRoot");
+  console.log("deletions", deletions);
+    while (deletions.length) {
+        const fiber = deletions.pop();
+        if (fiber.dom) {
+            fiber.dom.parentNode.removeChild(fiber.dom);
+        }
+
+    }
+
   currentRoot = root;
   root = null;
 }
@@ -199,7 +219,7 @@ function commitWork(fiber) {
       console.log("新增", fiber.dom);
       parentFiber.dom.appendChild(fiber.dom);
     } else {
-      console.warn("更新#####", fiber.dom);
+      console.warn("更新#####", fiber);
     }
   } catch (e) {
     console.error("fiber.dom err", fiber);
@@ -230,7 +250,7 @@ function findNextFiber(fiber) {
 
 function update() {
   functionComponents.forEach((item) => {
-    console.log("old", item);
+    // console.log("old", item);
     const newNode = item.updateFunction();
     Object.assign(item, newNode);
   });

@@ -77,8 +77,8 @@ function LBJ() {
         title="NBA 运动员"
       ></img>
       点击图片更改 {index}
-      {index % 2 === 0 ? <h2>@@@@</h2> : <h2>####</h2>}
-        {index % 2 === 0 ? 5555 : false}
+      {index % 2 === 0 ? <h2>@@@@</h2> : <h1>##11##</h1>}
+        {index % 2 === 0 ? <div>///||\\\</div> : false}
     </div>
   );
 }
