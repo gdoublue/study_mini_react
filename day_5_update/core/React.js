@@ -3,16 +3,25 @@
  * @description 模拟实现React mini版
  */
 
+const functionComponents = [];
+
 const createdElement = (type, props, ...children) => {
-  // console.log('%c createdElement======', 'color: #4096ef')
-  // console.log(type,props,children)
+  // console.log("createdElement", type, props, children);
   //判断是否是组件
   if (typeof type === "object") {
     return type;
   }
   //判断是不是函数组件
   if (typeof type === "function") {
-    return type(props);
+    const elm = {
+      ...type(props),
+      updateFunction: () => {
+        return type(props);
+      },
+    };
+    //记录函数组件 用于更新
+    functionComponents.push(elm);
+    return elm;
   }
 
   return {
@@ -39,11 +48,11 @@ const createTextElement = (text) => {
 let root;
 let currentRoot;
 const render = (element, container) => {
-  console.log('fiberRender',element,container)
+  console.log("fiberRender", element, container);
   root = {
     dom: container,
-    child: element,
-    props: element.props,
+
+    props: { children: [element] },
   };
   nextUnitofWork = root;
 
@@ -57,7 +66,19 @@ export function createDom(fiber) {
 }
 
 function updateProps(dom, props, preProps) {
+
+  if(preProps){
+    console.log("更新Props===========");
+    console.log("dom", dom);
+    console.log("props", props);
+    console.log("preProps", preProps);
+
+    console.log("^^^^^^^^^^^^^^^^^^^");
+  }
+
+
   preProps = preProps || {};
+  props = props || {};
   // props有，旧的preProps没有，修改或者增加
   Object.keys(props).forEach((name) => {
     if (name !== "children") {
@@ -75,8 +96,7 @@ function updateProps(dom, props, preProps) {
       } else {
         // 其他属性
         dom[name] = props[name];
-        if(preProps[name]){
-        console.log('xinjiu',props[name],preProps[name] )
+        if (preProps[name]) {
         }
       }
     }
@@ -106,7 +126,6 @@ export function calc(fiber) {
     fiber.dom = createDom(fiber);
   }
 
-  //
   updateProps(fiber.dom, fiber.props, fiber?.alterNate?.props);
 
   let preFiber;
@@ -176,7 +195,12 @@ function commitWork(fiber) {
     parentFiber = parentFiber.parent;
   }
   try {
-    parentFiber.dom.appendChild(fiber.dom);
+    if (fiber.effectTag === "PLACEMENT") {
+      console.log("新增", fiber.dom);
+      parentFiber.dom.appendChild(fiber.dom);
+    } else {
+      console.warn("更新#####", fiber.dom);
+    }
   } catch (e) {
     console.error("fiber.dom err", fiber);
   }
@@ -203,10 +227,15 @@ function findNextFiber(fiber) {
 }
 
 //更新
+
 function update() {
+  functionComponents.forEach((item) => {
+    console.log("old", item);
+    const newNode = item.updateFunction();
+    Object.assign(item, newNode);
+  });
   root = {
     dom: currentRoot.dom,
-    child: currentRoot.child,
     props: currentRoot.props,
     alterNate: currentRoot,
   };

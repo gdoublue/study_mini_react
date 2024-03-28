@@ -7,6 +7,7 @@ import react from './React.js'
 export const createRoot =(container)=>{
 
     return {
+
         render:(element)=>{
             react.render(element,container)
         }
