@@ -1,0 +1,22 @@
+.blue{
+    color: blue;
+}
+
+.title{
+    font-weight: bold;
+    font-size: 30px;
+    padding: 0 20px;
+}
+
+.nba{
+    bgc: #f00;
+}
+
+.player{
+    background-color: #999999;
+    padding: 20px;
+    img{
+
+        height: 100px;
+    }
+}
