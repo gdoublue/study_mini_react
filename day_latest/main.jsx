@@ -1,7 +1,5 @@
-import { createRoot } from "./core/react-dom.js";
-import   App   from "./component/app.jsx";
-import React from "./core/React.js";
+import React from './core/React.js';
+import ReactDOM from "./core/ReactDom.js";
+import App from "./App.jsx";
 
-
-createRoot(document.getElementById("app")).render(<App></App>);
-
+ReactDOM.createRoot(document.querySelector("#root")).render(<App></App>);

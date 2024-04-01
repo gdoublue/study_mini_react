@@ -9,20 +9,20 @@ const classArr = ["aaa", "bbb", "ccc", "AMD"];
 let i = 0;
 
 function NBA() {
+  console.log('注册NBA')
   const random = Math.floor(Math.random() * 100);
   return (
     <div className="nba">
       <h1>
-        NBA
+        Test
         <img
-          src="https://cdn.nba.com/logos/leagues/logo-nba.svg"
+          src="http://192.168.110.50:8080/favicon.ico"
           alt="NBA Logo"
           title="NBA Logo"
         ></img>
         random:{random}
       </h1>
       <Player num={23}></Player>
-
     </div>
   );
 }
@@ -33,8 +33,14 @@ function Player({ num }) {
     <div className="player">
       <h4>{num}</h4>
       <LBJ></LBJ>
+      {showMi ? <div>米切尔</div> : false}
     </div>
   );
+}
+
+function FIFA() {
+  console.log("%c%s", "color:red;font-size:30px;", "FIFA_BASKETBALL");
+  return <div style="color:green;font-size:30px;">FIFA_BASKETBALL</div>;
 }
 
 let index = 0;
@@ -54,23 +60,26 @@ const imgList = [
   "https://cdn.nba.com/headshots/nba/latest/1040x760/1629025.png",
   "https://cdn.nba.com/headshots/nba/latest/1040x760/1628989.png",
 ];
-function handleClick() {
-  //根据当前index  循环 imgList 的索引
 
-  index = index + 1 >= imgList.length - 1 ? 0 : index + 1;
-  console.log("index", index);
-  imgUrl = imgList[index];
-  console.log("imgURL", imgUrl);
-  React.update();
-}
 let imgUrl = imgList[index];
+let showMi = false;
 function LBJ() {
   // console.log('index',index++)
-
+  console.log("注册组件LBJ");
+  const update = React.update();
+  function handleClick() {
+    //根据当前index  循环 imgList 的索引
+    showMi = !showMi;
+    index = index + 1 >= imgList.length - 1 ? 0 : index + 1;
+    console.log("index", index);
+    imgUrl = imgList[index];
+    console.log("imgURL", imgUrl);
+    update();
+  }
   return (
     <div className="lbj">
       <img
-        style="width:200px;height:auto;"
+        style="width:100px;height:auto;"
         onClick={handleClick}
         src={imgUrl}
         alt="NBA plAYER"
@@ -78,7 +87,7 @@ function LBJ() {
       ></img>
       点击图片更改 {index}
       {index % 2 === 0 ? <h2>@@@@</h2> : <h1>##11##</h1>}
-        {index % 2 === 0 ? <div>///||\\\</div> : false}
+      {index % 2 === 0 ? <div>///||\\\</div> : false}
     </div>
   );
 }
@@ -94,9 +103,11 @@ function LBJ() {
 // console.log({ Appcmp ,Test });
 
 function app() {
+  console.log('注册组件app')
   return (
     <div className={index}>
       <NBA></NBA>
+      <FIFA></FIFA>
     </div>
   );
 }

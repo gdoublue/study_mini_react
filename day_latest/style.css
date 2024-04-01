@@ -1,22 +1,28 @@
-.blue{
-    color: blue;
+.todo-title{
+  font-size: 20px ;
+  width: 400px;
+  display: inline-block;
+
+}
+.todo-title.completed{
+  text-decoration: line-through;
 }
 
-.title{
-    font-weight: bold;
-    font-size: 30px;
-    padding: 0 20px;
+li{
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
 }
+.save-btn{
+    padding: 15px 30px;
+    background-image: url("https://cdn.nba.com/logos/leagues/logo-nba.svg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 
 .nba{
-    bgc: #f00;
-}
+    position: fixed;
+    bottom: 0;
 
-.player{
-    background-color: #999999;
-    padding: 20px;
-    img{
-
-        height: 100px;
-    }
 }

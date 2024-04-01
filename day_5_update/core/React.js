@@ -6,21 +6,26 @@
 const functionComponents = [];
 
 const createdElement = (type, props, ...children) => {
-
   //判断是否是组件
   if (typeof type === "object") {
     return type;
   }
+
   //判断是不是函数组件
   if (typeof type === "function") {
-    const elm = {
+    console.log("createdElementFFFFF", type, props, children);
+    const elm = {};
+    //记录函数组件 用于更新
+    functionComponents.push(elm);
+    Object.assign(elm, {
+
       ...type(props),
       updateFunction: () => {
         return type(props);
+          // Object.assign(elm,  type(props));
       },
-    };
-    //记录函数组件 用于更新
-    functionComponents.push(elm);
+    });
+
     return elm;
   }
 
@@ -47,6 +52,7 @@ const createTextElement = (text) => {
 
 let root;
 let currentRoot;
+let wipFiber;
 const render = (element, container) => {
   console.log("fiberRender", element, container);
   root = {
@@ -67,7 +73,6 @@ export function createDom(fiber) {
 }
 
 function updateProps(dom, props, preProps) {
-
   // if(preProps){
   //   console.log("更新Props===========");
   //   console.log("dom", dom);
@@ -76,7 +81,6 @@ function updateProps(dom, props, preProps) {
   //
   //   console.log("^^^^^^^^^^^^^^^^^^^");
   // }
-
 
   preProps = preProps || {};
   props = props || {};
@@ -96,8 +100,8 @@ function updateProps(dom, props, preProps) {
         dom.addEventListener(eventType, props[name]);
       } else {
         // 其他属性
-        dom[name] = props[name];
-        if (preProps[name]) {
+        if (props[name] && props[name] !== 0) {
+          dom[name] = props[name];
         }
       }
     }
@@ -125,52 +129,60 @@ function updateProps(dom, props, preProps) {
 
 let deletions = [];
 export function calc(fiber) {
+  console.log("calc++++++++++++++++++++", fiber)
   if (!fiber.dom) {
     fiber.dom = createDom(fiber);
   }
 
   updateProps(fiber.dom, fiber.props, fiber?.alterNate?.props);
 
-
-
   let preFiber;
   let oldFiber = fiber.alterNate?.child;
   fiber.props.children.forEach((child, index) => {
     const isSame = oldFiber && oldFiber.type === child.type;
-    let item;
+    // let item;
     // console.log("isSame", isSame, oldFiber, child)
     if (isSame) {
 
-      item = {
-        type: child.type,
-        parent: fiber,
-        dom: oldFiber.dom,
-        props: child.props,
-        alterNate: oldFiber,
-        effectTag: "UPDATE",
-      };
-    } else {
+      // item = {
+      //   type: child.type,
+      //   parent: fiber,
+      //   dom: oldFiber.dom,
+      //   props: child.props,
+      //   alterNate: oldFiber,
+      //   effectTag: "UPDATE",
+      // }
+      child.parent = fiber;
+      child.effectTag = "UPDATE";
 
-      if(oldFiber){
-        deletions.push(oldFiber)
+      child.dom = oldFiber.dom
+      child.alterNate = oldFiber
+
+    } else {
+      if (oldFiber) {
+        deletions.push(oldFiber);
       }
-      item = {
-        type: child.type,
-        parent: fiber,
-        dom: null,
-        props: child.props,
-        effectTag: "PLACEMENT",
-      };
+      // item = {
+      //   type: child.type,
+      //   parent: fiber,
+      //   dom: null,
+      //   props: child.props,
+      //   effectTag: "PLACEMENT",
+      // };
+      child.parent = fiber;
+      child.dom = null
+      child.effectTag = "PLACEMENT";
+
     }
     if (oldFiber) {
       oldFiber = oldFiber.sibling;
     }
     if (index === 0) {
-      fiber.child = item;
-      preFiber = item;
+      fiber.child = child;
+      preFiber = child;
     } else {
-      preFiber.sibling = item;
-      preFiber = item;
+      preFiber.sibling = child;
+      preFiber = child;
     }
   });
 
@@ -197,13 +209,12 @@ function commitRoot() {
   root && commitWork(root.child);
   console.timeEnd("commitRoot");
   console.log("deletions", deletions);
-    while (deletions.length) {
-        const fiber = deletions.pop();
-        if (fiber.dom) {
-            fiber.dom.parentNode.removeChild(fiber.dom);
-        }
-
+  while (deletions.length) {
+    const fiber = deletions.pop();
+    if (fiber.dom) {
+      fiber.dom.parentNode.removeChild(fiber.dom);
     }
+  }
 
   currentRoot = root;
   root = null;
@@ -248,8 +259,30 @@ function findNextFiber(fiber) {
 
 //更新
 
+let functionIdx
 function update() {
-  functionComponents.forEach((item) => {
+  console.log("update-----index", functionComponents);
+  let Index = functionIdx || functionComponents.length -1;
+  functionComponents[Index].functionIndex = Index;
+  return () => {
+    functionIdx = Index;
+    console.log({ Index, functionComponents });
+   const newItem =   functionComponents[Index].updateFunction();
+
+
+    root = {
+      dom: functionComponents[Index].dom,
+      props: newItem.props,
+      alterNate: functionComponents[Index],
+    };
+
+    nextUnitofWork = root
+    console.log("nextUnitofWork", nextUnitofWork);
+    requestIdleCallback(workLoop);
+    Object.assign(functionComponents[Index], newItem)
+  };
+
+  /*  functionComponents.forEach((item) => {
     // console.log("old", item);
     const newNode = item.updateFunction();
     Object.assign(item, newNode);
@@ -261,7 +294,7 @@ function update() {
   };
   nextUnitofWork = root;
 
-  requestIdleCallback(workLoop);
+  requestIdleCallback(workLoop);*/
 }
 
 const react = {
